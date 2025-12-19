@@ -1,0 +1,82 @@
+.editProfilePage {
+  padding: 4rem 0;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+}
+
+.editProfileContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--surface);
+  padding: 3rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.pageHeader {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.pageSubtitle {
+  color: var(--text-light);
+  font-size: 1rem;
+}
+
+.editProfileForm {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.formSections {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.formNotice {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: var(--background);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.noticeText {
+  color: var(--text-light);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .editProfileContainer {
+    padding: 2rem;
+    margin: 0 1rem;
+  }
+  
+  .pageTitle {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .editProfileContainer {
+    padding: 1.5rem;
+  }
+  
+  .editProfilePage {
+    padding: 2rem 0;
+  }
+  
+  .formSections {
+    gap: 2rem;
+  }
+}
