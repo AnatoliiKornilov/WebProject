@@ -1,4 +1,119 @@
 .registerPage {
   padding: 4rem 0;
-  min-height: 60vh;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+}
+
+.registerContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--surface);
+  padding: 3rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.registerHeader {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.title {
+  font-size: 2rem;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: var(--text-light);
+  font-size: 1rem;
+}
+
+.registerForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.formActions {
+  margin-top: 0.5rem;
+}
+
+.formFooter {
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.footerText {
+  color: var(--text-light);
+  font-size: 0.95rem;
+}
+
+.footerLink {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.footerLink:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+.termsNotice {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: var(--background);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.termsText {
+  color: var(--text-light);
+  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.termsLink {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.termsLink:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .registerContainer {
+    padding: 2rem;
+    margin: 0 1rem;
+  }
+  
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .title {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .registerContainer {
+    padding: 1.5rem;
+  }
+  
+  .registerPage {
+    padding: 2rem 0;
+  }
 }

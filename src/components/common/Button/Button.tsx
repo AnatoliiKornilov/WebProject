@@ -9,6 +9,7 @@ interface ButtonProps {
   size?: 'small' | 'medium' | 'large';
   disabled?: boolean;
   className?: string;
+  fullWidth?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -19,12 +20,14 @@ const Button: React.FC<ButtonProps> = ({
   size = 'medium',
   disabled = false,
   className = '',
+  fullWidth = false,
 }) => {
   const buttonClasses = [
     styles.button,
     styles[variant],
     styles[size],
     disabled ? styles.disabled : '',
+    fullWidth ? styles.fullWidth : '',
     className,
   ].join(' ');
 

@@ -72,3 +72,7 @@
   padding: 16px 32px;
   font-size: 18px;
 }
+
+.fullWidth {
+  width: 100%;
+}
