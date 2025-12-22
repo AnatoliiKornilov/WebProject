@@ -1,0 +1,13 @@
+.preview {
+  padding: 1rem 0;
+}
+
+.hint {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  color: #64748b;
+  font-size: 0.875rem;
+  text-align: center;
+}

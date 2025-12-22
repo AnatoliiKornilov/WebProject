@@ -1,107 +1,170 @@
-import React, { useState } from 'react';
-import Card from '../../components/common/Card/Card';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchProjects } from '../../store/slices/projectsSlice';
 import Button from '../../components/common/Button/Button';
+import ProjectPreviewModal from '../../components/common/ProjectPreviewModal/ProjectPreviewModal';
 import styles from './ProjectsPage.module.css';
-
-// Временные данные для демонстрации
-const mockProjects = [
-  {
-    id: '1',
-    title: 'E-commerce Platform',
-    description: 'Полнофункциональная платформа электронной коммерции с системой управления заказами, платежами и инвентарем.',
-    technologies: ['React', 'Node.js', 'MongoDB', 'Stripe'],
-    role: 'Full-stack разработчик',
-    demoUrl: 'https://demo.example.com',
-    codeUrl: 'https://github.com/username/ecommerce',
-  },
-  {
-    id: '2',
-    title: 'Task Management App',
-    description: 'Приложение для управления задачами с реальным временем обновления и совместной работой.',
-    technologies: ['Vue.js', 'Firebase', 'SCSS'],
-    role: 'Frontend разработчик',
-    demoUrl: 'https://tasks.example.com',
-    codeUrl: 'https://github.com/username/taskapp',
-  },
-  {
-    id: '3',
-    title: 'AI Chatbot',
-    description: 'Интеллектуальный чат-бот с обработкой естественного языка и интеграцией с популярными мессенджерами.',
-    technologies: ['Python', 'TensorFlow', 'Docker', 'AWS'],
-    role: 'ML Engineer',
-    demoUrl: 'https://chatbot.example.com',
-    codeUrl: 'https://github.com/username/chatbot',
-  },
-];
+import type { Project } from '../../types';
+import { getProjectImage } from '../../utils/imageUtils';
 
 const ProjectsPage: React.FC = () => {
-  const [projects, setProjects] = useState(mockProjects);
-  const [isEditable, setIsEditable] = useState(false);
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  
+  const { projects, status } = useAppSelector((state) => state.projects);
+  
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-  const handleEditProject = (id: string) => {
-    console.log('Редактировать проект:', id);
-    // Здесь будет логика редактирования
+  useEffect(() => {
+    dispatch(fetchProjects());
+  }, [dispatch]);
+
+  const handleViewProject = (project: Project) => {
+    setSelectedProject(project);
+    setIsPreviewOpen(true);
   };
 
-  const handleDeleteProject = (id: string) => {
+  const handleClosePreview = () => {
+    setIsPreviewOpen(false);
+    setTimeout(() => setSelectedProject(null), 300);
+  };
+
+  const handleEditProject = (projectId: string) => {
+    console.log('Редактировать проект:', projectId);
+    handleClosePreview();
+  };
+
+  const handleDeleteProject = (projectId: string) => {
     if (window.confirm('Вы уверены, что хотите удалить этот проект?')) {
-      setProjects(projects.filter(project => project.id !== id));
+      console.log('Удаление проекта:', projectId);
+      handleClosePreview();
     }
   };
 
-  const handleAddProject = () => {
-    console.log('Добавить новый проект');
-    // Здесь будет логика добавления
-  };
+  const isLoading = status === 'loading';
 
   return (
-    <div className={styles.projectsPage}>
+    <div className={styles.page}>
       <div className="container">
-        <div className={styles.pageHeader}>
-          <div>
-            <h1 className={styles.pageTitle}>Мои проекты</h1>
-          </div>
-          
-          <div className={styles.pageActions}>
-            <Button 
-              variant={isEditable ? "primary" : "outline"} 
-              onClick={() => setIsEditable(!isEditable)}
-            >
-              {isEditable ? 'Завершить редактирование' : 'Редактировать проекты'}
-            </Button>
-            <Button variant="primary" onClick={handleAddProject}>
-              + Добавить проект
-            </Button>
-          </div>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Мои проекты</h1>
+          {isAuthenticated && (
+            <Link to="/projects/add">
+              <Button variant="primary">
+                ➕ Добавить проект
+              </Button>
+            </Link>
+          )}
         </div>
 
-        <div className={styles.projectsGrid}>
-          {projects.map((project) => (
-            <Card
-              key={project.id}
-              title={project.title}
-              description={project.description}
-              technologies={project.technologies}
-              role={project.role}
-              demoUrl={project.demoUrl}
-              codeUrl={project.codeUrl}
-              isEditable={isEditable}
-              onEdit={() => handleEditProject(project.id)}
-              onDelete={() => handleDeleteProject(project.id)}
-            />
-          ))}
-        </div>
-
-        {projects.length === 0 && (
+        {isLoading ? (
+          <div className={styles.loading}>
+            <div className={styles.spinner}></div>
+            <p>Загрузка проектов...</p>
+          </div>
+        ) : projects.length > 0 ? (
+          <div className={styles.projectsGrid}>
+            {projects.map((project) => (
+              <div key={project.id} className={styles.projectCard}>
+                <div 
+                  className={styles.imageContainer}
+                  onClick={() => handleViewProject(project)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <img 
+                    src={getProjectImage(project.image)} 
+                    alt={project.title}
+                    className={styles.projectImage}
+                  />
+                </div>
+                
+                <div className={styles.projectContent}>
+                  <h2 
+                    className={styles.projectTitle}
+                    onClick={() => handleViewProject(project)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {project.title}
+                  </h2>
+                  <p className={styles.projectDescription}>{project.description}</p>
+                  
+                  <div className={styles.techStack}>
+                    {project.technologies.map((tech, index) => (
+                      <span key={index} className={styles.techTag}>
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                  
+                  {project.role && (
+                    <div className={styles.role}>
+                      <span className={styles.roleLabel}>Роль:</span>
+                      <span className={styles.roleValue}>{project.role}</span>
+                    </div>
+                  )}
+                  
+                  <div className={styles.projectActions}>
+                    <button 
+                      className={styles.viewButton}
+                      onClick={() => handleViewProject(project)}
+                    >
+                      Подробнее
+                    </button>
+                    
+                    {isAuthenticated && (
+                      <div className={styles.editActions}>
+                        <Link 
+                          to={`/projects/edit/${project.id}`}
+                          className={styles.editButton}
+                        >
+                          ✏️ Редактировать
+                        </Link>
+                        <button 
+                          className={styles.deleteButton}
+                          onClick={() => {
+                            if (window.confirm(`Удалить проект "${project.title}"?`)) {
+                              console.log('Удаление проекта:', project.id);
+                            }
+                          }}
+                        >
+                          🗑️ Удалить
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
           <div className={styles.emptyState}>
-            <div className={styles.emptyStateIcon}>📂</div>
-            <h3>Проектов пока нет</h3>
-            <p>Добавьте свой первый проект, чтобы начать создавать портфолио.</p>
-            <Button variant="primary" onClick={handleAddProject}>
-              Добавить первый проект
-            </Button>
+            <div className={styles.emptyIcon}>📁</div>
+            <h2 className={styles.emptyTitle}>Проекты не найдены</h2>
+            <p className={styles.emptyText}>
+              {isAuthenticated 
+                ? 'Добавьте свой первый проект, чтобы начать создавать портфолио'
+                : 'Войдите в систему, чтобы увидеть проекты'
+              }
+            </p>
+            {isAuthenticated && (
+              <Link to="/projects/add">
+                <Button variant="primary">
+                  ➕ Добавить первый проект
+                </Button>
+              </Link>
+            )}
           </div>
         )}
+
+        <ProjectPreviewModal
+          project={selectedProject}
+          isOpen={isPreviewOpen}
+          onClose={handleClosePreview}
+          onEdit={handleEditProject}
+          onDelete={handleDeleteProject}
+        />
       </div>
     </div>
   );

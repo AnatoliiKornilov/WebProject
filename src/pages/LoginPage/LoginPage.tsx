@@ -1,21 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { login, clearError } from '../../store/slices/authSlice';
 import Input from '../../components/common/Input/Input';
 import Button from '../../components/common/Button/Button';
 import styles from './LoginPage.module.css';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  
+  const { status, error, isAuthenticated } = useAppSelector((state) => state.auth);
+  
   const [formData, setFormData] = useState({
     username: '',
     password: '',
   });
-  const [errors, setErrors] = useState({
+  const [localErrors, setLocalErrors] = useState({
     username: '',
     password: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/profile');
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Валидация
@@ -24,12 +42,17 @@ const LoginPage: React.FC = () => {
       password: formData.password ? '' : 'Введите пароль',
     };
 
-    setErrors(newErrors);
+    setLocalErrors(newErrors);
 
     if (!newErrors.username && !newErrors.password) {
-      console.log('Вход с данными:', formData);
-      // Здесь будет логика входа
-      navigate('/profile');
+      const result = await dispatch(login({
+        username: formData.username,
+        password: formData.password,
+      }));
+      
+      if (login.fulfilled.match(result)) {
+        navigate('/profile');
+      }
     }
   };
 
@@ -39,14 +62,18 @@ const LoginPage: React.FC = () => {
       ...prev,
       [name]: value
     }));
-    // Очищаем ошибку при вводе
-    if (errors[name as keyof typeof errors]) {
-      setErrors(prev => ({
+    if (localErrors[name as keyof typeof localErrors]) {
+      setLocalErrors(prev => ({
         ...prev,
         [name]: ''
       }));
     }
+    if (error) {
+      dispatch(clearError());
+    }
   };
+
+  const isLoading = status === 'loading';
 
   return (
     <div className={styles.loginPage}>
@@ -65,10 +92,11 @@ const LoginPage: React.FC = () => {
               name="username"
               value={formData.username}
               onChange={handleChange}
-              error={errors.username}
+              error={localErrors.username}
               placeholder="Введите имя пользователя"
               fullWidth
               required
+              disabled={isLoading}
             />
 
             <Input
@@ -77,15 +105,28 @@ const LoginPage: React.FC = () => {
               type="password"
               value={formData.password}
               onChange={handleChange}
-              error={errors.password}
+              error={localErrors.password}
               placeholder="Введите пароль"
               fullWidth
               required
+              disabled={isLoading}
             />
 
+            {error && (
+              <div className={styles.errorMessage}>
+                {error}
+              </div>
+            )}
+
             <div className={styles.formActions}>
-              <Button type="submit" variant="primary" fullWidth>
-                Войти
+              <Button 
+                type="submit" 
+                variant="primary" 
+                fullWidth
+                isLoading={isLoading}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Вход...' : 'Войти'}
               </Button>
             </div>
 
@@ -102,6 +143,9 @@ const LoginPage: React.FC = () => {
           <div className={styles.demoNotice}>
             <p className={styles.demoText}>
               ⚠️ Демо-версия: используйте любые данные для входа
+            </p>
+            <p className={styles.demoText}>
+              Например: username: <strong>demo</strong>, пароль: <strong>любой</strong>
             </p>
           </div>
         </div>

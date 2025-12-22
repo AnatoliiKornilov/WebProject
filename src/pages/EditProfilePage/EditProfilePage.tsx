@@ -1,36 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { updateUserProfile } from '../../store/slices/usersSlice';
 import BasicInfoSection from './components/BasicInfoSection/BasicInfoSection';
 import ContactsSection from './components/ContactsSection/ContactsSection';
 import AboutSection from './components/AboutSection/AboutSection';
 import FormActions from './components/FormActions/FormActions';
-import type { UserFormData } from './types';
+import type { UserFormData } from '../../types';
 import styles from './EditProfilePage.module.css';
-
-const initialUserData: UserFormData = {
-  username: 'ivanov_dev',
-  email: 'ivan@example.com',
-  fullName: 'Иван Иванов',
-  position: 'Full-stack разработчик',
-  bio: 'Увлекаюсь разработкой высоконагруженных систем и машинным обучением. Участвую в open-source проектах.',
-  avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-  github: 'https://github.com/ivanov',
-  gitlab: 'https://gitlab.com/ivanov',
-  phone: '+7 (999) 123-45-67',
-  birthDate: '1995-03-15',
-  experience: 'Senior Developer в TechCompany (2020-настоящее время)\nMiddle Developer в StartupInc (2018-2020)',
-  education: 'Бакалавр компьютерных наук, Университет IT (2014-2018)',
-};
 
 const EditProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<UserFormData>(initialUserData);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatch = useAppDispatch();
+  
+  const { user } = useAppSelector((state) => state.auth);
+  const { status, error } = useAppSelector((state) => state.users);
 
-  useEffect(() => {
-    console.log('Загрузка данных пользователя для редактирования');
-  }, []);
+  const [formData, setFormData] = useState<UserFormData>({
+    username: user?.username || '',
+    email: user?.email || '',
+    fullName: user?.name || '',
+    position: '',
+    bio: '',
+    avatar: user?.avatar || '',
+    github: '',
+    gitlab: '',
+    phone: '',
+    birthDate: '',
+    experience: '',
+    education: '',
+  });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -60,17 +61,10 @@ const EditProfilePage: React.FC = () => {
       return;
     }
 
-    setIsSubmitting(true);
+    const result = await dispatch(updateUserProfile(formData));
     
-    try {
-      console.log('Сохранение профиля:', formData);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+    if (updateUserProfile.fulfilled.match(result)) {
       navigate('/profile');
-    } catch (error) {
-      console.error('Ошибка сохранения:', error);
-      setErrors({ submit: 'Не удалось сохранить изменения. Попробуйте позже.' });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -88,6 +82,8 @@ const EditProfilePage: React.FC = () => {
       navigate('/profile');
     }
   };
+
+  const isSubmitting = status === 'loading';
 
   return (
     <div className={styles.editProfilePage}>
@@ -123,7 +119,7 @@ const EditProfilePage: React.FC = () => {
               isSubmitting={isSubmitting}
               onSubmit={handleSubmit}
               onCancel={handleCancel}
-              error={errors.submit}
+              error={error || errors.submit}
             />
           </form>
 

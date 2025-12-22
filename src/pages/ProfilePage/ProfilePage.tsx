@@ -1,14 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchProjects } from '../../store/slices/projectsSlice';
 import ProfileHeader from './components/ProfileHeader/ProfileHeader';
 import ProfileInfo from './components/ProfileInfo/ProfileInfo';
 import ProfileProjects from './components/ProfileProjects/ProfileProjects';
 import ProfileStats from './components/ProfileStats/ProfileStats';
-import { mockUser, mockUserProjects } from './mockData';
 import styles from './ProfilePage.module.css';
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const { projects, status } = useAppSelector((state) => state.projects);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    
+    dispatch(fetchProjects());
+  }, [dispatch, isAuthenticated, navigate]);
 
   const handleEditProfile = () => {
     navigate('/profile/edit');
@@ -25,9 +39,16 @@ const ProfilePage: React.FC = () => {
   const handleDeleteProject = (id: string) => {
     if (window.confirm('Вы уверены, что хотите удалить этот проект?')) {
       console.log('Удалить проект:', id);
-      // Здесь будет логика удаления
     }
   };
+
+  if (!user) {
+    return (
+      <div className={styles.loading}>
+        <p>Загрузка профиля...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.profilePage}>
@@ -42,25 +63,26 @@ const ProfilePage: React.FC = () => {
         </div>
 
         <ProfileHeader 
-          user={mockUser}
+          user={user}
           onEditProfile={handleEditProfile}
           onAddProject={handleAddProject}
         />
 
         <div className={styles.profileContent}>
           <div className={styles.mainColumn}>
-            <ProfileInfo user={mockUser} />
+            <ProfileInfo user={user} />
           </div>
 
           <div className={styles.sidebarColumn}>
             <ProfileProjects 
-              projects={mockUserProjects}
+              projects={projects}
               onEditProject={handleEditProject}
               onDeleteProject={handleDeleteProject}
+              isLoading={status === 'loading'}
             />
             <ProfileStats 
-              user={mockUser}
-              projectCount={mockUserProjects.length}
+              user={user}
+              projectCount={projects.length}
             />
           </div>
         </div>

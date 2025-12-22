@@ -91,6 +91,17 @@
   color: var(--primary);
 }
 
+.emptyText {
+  color: #666;
+  font-style: italic;
+  margin: 0;
+}
+
+.noLinks {
+  color: #666;
+  font-style: italic;
+}
+
 @media (max-width: 768px) {
   .profileInfo {
     padding: 1.5rem;

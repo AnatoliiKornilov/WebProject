@@ -57,3 +57,68 @@ export interface ProfileHeaderProps {
   onEditProfile: () => void;
   onAddProject: () => void;
 }
+
+export interface TagInputProps {
+  tags: string[];
+  onChange: (tags: string[]) => void;
+  placeholder?: string;
+  maxTags?: number;
+  disabled?: boolean;
+  label?: string;
+  error?: string;
+}
+
+export interface ProjectFormData {
+  id?: string;
+  title: string;
+  description: string;
+  image: string;
+  technologies: string[];
+  role: string;
+  demoUrl?: string;
+  codeUrl?: string;
+}
+export interface PublicProfile {
+  id: string;
+  username: string;
+  fullName: string;
+  position: string;
+  bio: string;
+  avatar: string;
+  github?: string;
+  gitlab?: string;
+  email?: string;
+  phone?: string;
+  birthDate?: string;
+  experience?: string;
+  education?: string;
+  createdAt: string;
+  isPublic: boolean;
+}
+
+export interface PublicProject {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  technologies: string[];
+  role: string;
+  demoUrl?: string;
+  codeUrl?: string;
+  createdAt: string;
+}
+
+export interface UserFormData {
+  username: string;
+  email: string;
+  fullName?: string;
+  position?: string;
+  bio?: string;
+  avatar?: string;
+  github?: string;
+  gitlab?: string;
+  phone?: string;
+  birthDate?: string;
+  experience?: string;
+  education?: string;
+}

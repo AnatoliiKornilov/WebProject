@@ -7,13 +7,30 @@ interface ProfileInfoProps {
 }
 
 const ProfileInfo: React.FC<ProfileInfoProps> = ({ user }) => {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'Не указано';
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Неверный формат даты';
+      }
+      
+      return date.toLocaleDateString('ru-RU', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+    } catch (error) {
+      console.error('Ошибка форматирования даты:', error);
+      return 'Не указано';
+    }
+  };
+
+  // Функция для безопасного разбиения строки
+  const safeSplit = (text?: string, separator: string = '\n') => {
+    if (!text || typeof text !== 'string') return [];
+    return text.split(separator).filter(item => item.trim());
   };
 
   return (
@@ -23,11 +40,11 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({ user }) => {
         <div className={styles.infoGrid}>
           <div className={styles.infoItem}>
             <span className={styles.infoLabel}>Email:</span>
-            <span className={styles.infoValue}>{user.email}</span>
+            <span className={styles.infoValue}>{user.email || 'Не указано'}</span>
           </div>
           <div className={styles.infoItem}>
             <span className={styles.infoLabel}>Телефон:</span>
-            <span className={styles.infoValue}>{user.phone}</span>
+            <span className={styles.infoValue}>{user.phone || 'Не указано'}</span>
           </div>
           <div className={styles.infoItem}>
             <span className={styles.infoLabel}>Дата рождения:</span>
@@ -61,29 +78,40 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({ user }) => {
               GitLab
             </a>
           )}
+          {!user.github && !user.gitlab && (
+            <span className={styles.noLinks}>Ссылки не указаны</span>
+          )}
         </div>
       </div>
 
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>О себе</h3>
-        <p className={styles.bio}>{user.bio}</p>
+        <p className={styles.bio}>{user.bio || 'Информация о себе не добавлена'}</p>
       </div>
 
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>Опыт работы</h3>
         <div className={styles.list}>
-          {user.experience.split('\n').map((item, index) => (
-            <p key={index} className={styles.listItem}>{item}</p>
-          ))}
+          {safeSplit(user.experience).length > 0 ? (
+            safeSplit(user.experience).map((item, index) => (
+              <p key={index} className={styles.listItem}>{item}</p>
+            ))
+          ) : (
+            <p className={styles.emptyText}>Опыт работы не указан</p>
+          )}
         </div>
       </div>
 
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>Образование</h3>
         <div className={styles.list}>
-          {user.education.split('\n').map((item, index) => (
-            <p key={index} className={styles.listItem}>{item}</p>
-          ))}
+          {safeSplit(user.education).length > 0 ? (
+            safeSplit(user.education).map((item, index) => (
+              <p key={index} className={styles.listItem}>{item}</p>
+            ))
+          ) : (
+            <p className={styles.emptyText}>Образование не указано</p>
+          )}
         </div>
       </div>
     </div>
