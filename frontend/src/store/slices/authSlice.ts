@@ -23,11 +23,12 @@ const getUserProfile = async (userId: string): Promise<User | null> => {
 
     console.log('Результат запроса профиля:', { error, status, profile });
 
+    if (error && error.code === 'PGRST116') {
+      console.log('Профиль не найден в таблице profiles. Это нормально для нового пользователя.');
+      return null;
+    }
+
     if (error) {
-      if (status === 406 || error.code === 'PGRST116') {
-        console.log('Профиль не найден, будет создан позже');
-        return null;
-      }
       throw error;
     }
 
@@ -54,7 +55,7 @@ const getUserProfile = async (userId: string): Promise<User | null> => {
     };
   } catch (error) {
     console.error('Ошибка getUserProfile:', error);
-    return null;
+    throw error;
   }
 };
 
@@ -80,32 +81,9 @@ export const checkAuthSession = createAsyncThunk(
       const userProfile = await getUserProfile(session.user.id);
       
       if (!userProfile) {
-        console.log('Профиль не найден, создаём базовый профиль...');
-        
-        const username = session.user.email?.split('@')[0] || `user_${session.user.id.slice(0, 8)}`;
-        
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: session.user.id,
-            username: username,
-            email: session.user.email!,
-            full_name: session.user.user_metadata?.full_name || username,
-          });
-
-        if (profileError) {
-          console.error('Ошибка создания профиля:', profileError);
-        } else {
-          console.log('Базовый профиль создан');
-        }
-        
-        const newProfile = await getUserProfile(session.user.id);
-        if (!newProfile) {
-          throw new Error('Не удалось создать профиль');
-        }
-        
+        console.log('Профиль не найден. Это может быть новый пользователь или ошибка RLS.');
         return {
-          user: newProfile,
+          user: null,
           token: session.access_token,
         };
       }
@@ -136,8 +114,27 @@ export const login = createAsyncThunk(
 
       const userProfile = await getUserProfile(data.user.id);
       
-      if (!userProfile) {
-        throw new Error('Профиль пользователя не найден');
+        console.log('Профиль не найден при входе. Создаём базовый...');
+        const username = data.user.email?.split('@')[0] || `user_${data.user.id.slice(0, 8)}`;
+        
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            username: username,
+            email: data.user.email!,
+            full_name: username,
+          });
+
+        if (profileError) {
+          console.error('Ошибка создания профиля при входе:', profileError);
+        }
+        
+        const newProfile = await getUserProfile(data.user.id);
+        return {
+          user: newProfile,
+          token: data.session?.access_token,
+        };
       }
 
       return {
@@ -174,17 +171,23 @@ export const register = createAsyncThunk(
       if (error) throw error;
 
       if (data.user) {
+        const username = userData.username || data.user.email?.split('@')[0] || `user_${data.user.id.slice(0, 8)}`;
+        
         const { error: profileError } = await supabase
           .from('profiles')
-          .insert({
+          .upsert({
             id: data.user.id,
-            username: userData.username || data.user.email?.split('@')[0] || `user_${data.user.id.slice(0, 8)}`,
+            username: username,
             email: userData.email,
-            full_name: userData.fullName,
-          });
+            full_name: userData.fullName || username,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .select()
+          .single();
 
         if (profileError) {
-          console.warn('Профиль не создан:', profileError);
+          console.warn('Профиль не создан (возможно уже существует):', profileError.message);
         }
 
         const userProfile = await getUserProfile(data.user.id);
@@ -192,9 +195,9 @@ export const register = createAsyncThunk(
         return {
           user: userProfile || {
             id: data.user.id,
-            username: userData.username || data.user.email?.split('@')[0] || '',
+            username: username,
             email: userData.email,
-            name: userData.fullName || userData.username || 'Пользователь',
+            name: userData.fullName || username,
             avatar: '/images/default-avatar.svg',
             createdAt: new Date().toISOString(),
           },
@@ -244,7 +247,7 @@ const authSlice = createSlice({
         if (action.payload) {
           state.user = action.payload.user;
           state.token = action.payload.token;
-          state.isAuthenticated = true;
+          state.isAuthenticated = !!action.payload.user;
         }
       })
       .addCase(checkAuthSession.rejected, (state, action) => {
