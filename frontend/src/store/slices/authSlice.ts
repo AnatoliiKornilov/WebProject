@@ -19,20 +19,16 @@ const getUserProfile = async (userId: string): Promise<User | null> => {
       .from('profiles')
       .select('*')
       .eq('id', userId)
-      .single();
+      .maybeSingle();
 
     console.log('Результат запроса профиля:', { error, status, profile });
-
-    if (error && error.code === 'PGRST116') {
-      console.log('Профиль не найден в таблице profiles. Это нормально для нового пользователя.');
-      return null;
-    }
 
     if (error) {
       throw error;
     }
 
     if (!profile) {
+      console.log('Профиль не найден в таблице profiles. Это нормально для нового пользователя.');
       return null;
     }
 
