@@ -30,9 +30,6 @@ CREATE TABLE IF NOT EXISTS public.projects (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Публичные профили доступны всем" 
   ON public.profiles FOR SELECT 
   USING (true);
