@@ -48,7 +48,6 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
-    "redux-mock-store": "^1.5.6",
     "supabase": "^2.67.3",
     "ts-jest": "^29.4.6",
     "typescript": "~5.9.3",
@@ -58,9 +57,16 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "jsdom",
-    "roots": ["<rootDir>/src"],
-    "moduleDirectories": ["node_modules", "src"],
-    "testMatch": ["**/__tests__/**/*.test.ts?(x)"],
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.test.ts?(x)"
+    ],
     "moduleNameMapper": {
       "\\.module\\.css$": "identity-obj-proxy",
       "\\.css$": "<rootDir>/src/__mocks__/styleMock.js",
@@ -71,12 +77,17 @@
       "!src/**/*.d.ts",
       "!src/**/index.ts"
     ],
-    "setupFilesAfterEnv": ["<rootDir>/src/setupTests.ts"],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.ts"
+    ],
     "transform": {
-      "^.+\\.(ts|tsx)$": ["ts-jest", {
-        "tsconfig": "./tsconfig.json",
-        "isolatedModules": true
-      }]
+      "^.+\\.(ts|tsx)$": [
+        "ts-jest",
+        {
+          "tsconfig": "./tsconfig.json",
+          "isolatedModules": true
+        }
+      ]
     }
   }
 }
