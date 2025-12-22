@@ -2,19 +2,7 @@
   "name": "devportfolio",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "frontend"
-  ],
   "scripts": {
-    "dev": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build",
-    "preview": "cd frontend && npm run preview",
-    "supabase:start": "supabase start",
-    "supabase:stop": "supabase stop",
-    "supabase:reset": "supabase db reset",
-    "supabase:gen-types": "supabase gen types typescript --project-id your_project_id > frontend/src/lib/database.types.ts"
-  },
-  "devDependencies": {
-    "supabase": "^1.226.4"
+    "build": "cd frontend && npm run build"
   }
 }
