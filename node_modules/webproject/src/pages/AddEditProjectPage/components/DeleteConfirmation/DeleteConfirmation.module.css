@@ -1,0 +1,21 @@
+.container {
+  padding: 1rem 0;
+}
+
+.message {
+  margin-bottom: 1rem;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.warning {
+  color: #ef4444;
+  font-weight: 500;
+  margin-bottom: 2rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
