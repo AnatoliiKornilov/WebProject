@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { register, clearError } from '../../store/slices/authSlice';
+import { register, clearError, checkAuthSession } from '../../store/slices/authSlice'; // Импортируем checkAuthSession
 import Input from '../../components/common/Input/Input';
 import Button from '../../components/common/Button/Button';
 import styles from './RegisterPage.module.css';
@@ -76,6 +76,7 @@ const RegisterPage: React.FC = () => {
       }));
       
       if (register.fulfilled.match(result)) {
+        await dispatch(checkAuthSession());
         navigate('/profile');
       }
     }
