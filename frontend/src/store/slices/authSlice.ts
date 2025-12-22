@@ -113,7 +113,8 @@ export const login = createAsyncThunk(
       if (error) throw error;
 
       const userProfile = await getUserProfile(data.user.id);
-      
+
+      if (!userProfile) {
         console.log('Профиль не найден при входе. Создаём базовый...');
         const username = data.user.email?.split('@')[0] || `user_${data.user.id.slice(0, 8)}`;
         
@@ -129,7 +130,7 @@ export const login = createAsyncThunk(
         if (profileError) {
           console.error('Ошибка создания профиля при входе:', profileError);
         }
-        
+
         const newProfile = await getUserProfile(data.user.id);
         return {
           user: newProfile,
