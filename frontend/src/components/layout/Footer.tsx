@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import styles from './Footer.module.css';
 
 const Footer: React.FC = () => {
@@ -18,11 +19,67 @@ const Footer: React.FC = () => {
         <div className={styles.footerSection}>
           <h4 className={styles.footerSubtitle}>Навигация</h4>
           <ul className={styles.footerLinks}>
-            <li><a href="/" className={styles.footerLink}>Главная</a></li>
-            <li><a href="/projects" className={styles.footerLink}>Проекты</a></li>
-            <li><a href="/profile" className={styles.footerLink}>Профиль</a></li>
-            <li><a href="/login" className={styles.footerLink}>Войти</a></li>
-            <li><a href="/register" className={styles.footerLink}>Регистрация</a></li>
+            <li>
+              <NavLink 
+                to="/" 
+                className={({ isActive }) => 
+                  isActive ? `${styles.footerLink} ${styles.activeLink}` : styles.footerLink
+                }
+                end
+              >
+                Главная
+              </NavLink>
+            </li>
+            <li>
+              <NavLink 
+                to="/profiles" 
+                className={({ isActive }) => 
+                  isActive ? `${styles.footerLink} ${styles.activeLink}` : styles.footerLink
+                }
+              >
+                Портфолио
+              </NavLink>
+            </li>
+            <li>
+              <NavLink 
+                to="/projects" 
+                className={({ isActive }) => 
+                  isActive ? `${styles.footerLink} ${styles.activeLink}` : styles.footerLink
+                }
+              >
+                Проекты
+              </NavLink>
+            </li>
+            <li>
+              <NavLink 
+                to="/projects/add" 
+                className={({ isActive }) => 
+                  isActive ? `${styles.footerLink} ${styles.activeLink}` : styles.footerLink
+                }
+              >
+                Добавить проект
+              </NavLink>
+            </li>
+            <li>
+              <NavLink 
+                to="/login" 
+                className={({ isActive }) => 
+                  isActive ? `${styles.footerLink} ${styles.activeLink}` : styles.footerLink
+                }
+              >
+                Войти
+              </NavLink>
+            </li>
+            <li>
+              <NavLink 
+                to="/register" 
+                className={({ isActive }) => 
+                  isActive ? `${styles.footerLink} ${styles.activeLink}` : styles.footerLink
+                }
+              >
+                Регистрация
+              </NavLink>
+            </li>
           </ul>
         </div>
 

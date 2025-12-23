@@ -253,7 +253,6 @@
   margin: 0;
 }
 
-/* How It Works секция */
 .howItWorks {
   padding: 6rem 0;
   background: #f8fafc;
@@ -262,8 +261,8 @@
 .steps {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  gap: 3rem;
+  align-items: center;
+  gap: 2rem;
   position: relative;
 }
 
@@ -271,6 +270,9 @@
   flex: 1;
   text-align: center;
   max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .stepNumber {
@@ -284,7 +286,7 @@
   justify-content: center;
   font-size: 1.5rem;
   font-weight: 700;
-  margin: 0 auto 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .stepTitle {
@@ -298,24 +300,18 @@
   color: #64748b;
   line-height: 1.6;
   margin: 0;
+  flex-grow: 1;
 }
 
-.stepConnector {
-  flex: 0 0 60px;
-  height: 2px;
-  background: #cbd5e1;
-  margin-top: 30px;
-  position: relative;
-}
-
-.stepConnector::after {
-  content: '→';
-  position: absolute;
-  right: -10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #64748b;
-  font-size: 1.5rem;
+.stepArrow {
+  color: #8b5cf6;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0 0.5rem;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  min-height: 200px;
 }
 
 @media (max-width: 1024px) {
@@ -343,17 +339,16 @@
     gap: 3rem;
   }
   
-  .stepConnector {
-    width: 2px;
-    height: 40px;
-    margin: 0 auto;
+  .step {
+    max-width: 100%;
+    width: 100%;
   }
   
-  .stepConnector::after {
-    content: '↓';
-    right: 50%;
-    top: 100%;
-    transform: translateX(50%);
+  .stepArrow {
+    transform: rotate(90deg);
+    margin: 0;
+    height: auto;
+    min-height: auto;
   }
 }
 

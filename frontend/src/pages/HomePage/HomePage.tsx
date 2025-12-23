@@ -162,7 +162,7 @@ const HomePage: React.FC = () => {
               </p>
             </div>
             
-            <div className={styles.stepConnector}></div>
+            <div className={styles.stepArrow}>→</div>
             
             <div className={styles.step}>
               <div className={styles.stepNumber}>2</div>
@@ -172,7 +172,7 @@ const HomePage: React.FC = () => {
               </p>
             </div>
             
-            <div className={styles.stepConnector}></div>
+            <div className={styles.stepArrow}>→</div>
             
             <div className={styles.step}>
               <div className={styles.stepNumber}>3</div>
